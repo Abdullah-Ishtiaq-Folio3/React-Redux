@@ -1,5 +1,7 @@
 import { Button, Form, Input, Select } from "antd";
 import AntPhone from "./InputPhone";
+import UploadImage from "./UploadImage";
+import { addUser } from "../../service/ApiCalls";
 
 const { Option } = Select;
 const formItemLayout = {
@@ -35,6 +37,14 @@ const tailFormItemLayout = {
 
 const onFinish = (values) => {
   console.log(values);
+  const user = {
+    name: values.name,
+    email: values.email,
+    password: values.password,
+    avatar: values.upload[0].response.location,
+  };
+  console.log(user.avatar);
+  addUser(user);
 };
 
 const AddUserForm = () => {
@@ -57,7 +67,7 @@ const AddUserForm = () => {
         rules={[
           {
             required: true,
-            message: "Please input your name!",
+            message: "Please input user's name!",
             whitespace: true,
           },
         ]}
@@ -75,7 +85,7 @@ const AddUserForm = () => {
           },
           {
             required: true,
-            message: "Please input your E-mail!",
+            message: "Please input user's E-mail!",
           },
         ]}
       >
@@ -89,18 +99,17 @@ const AddUserForm = () => {
         rules={[
           {
             required: true,
-            message: "Please input your password!",
+            message: "Please input user's password!",
           },
           () => ({
             validator(_, value) {
-              const regex =
-                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+              const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
               if (!value || regex.test(value)) {
                 return Promise.resolve();
               }
               return Promise.reject(
                 new Error(
-                  "The password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+                  "The password must be at least 8 characters long and contain at least letter and one number."
                 )
               );
             },
@@ -118,7 +127,7 @@ const AddUserForm = () => {
         rules={[
           {
             required: true,
-            message: "Please confirm your password!",
+            message: "Please confirm user's password!",
           },
           ({ getFieldValue }) => ({
             validator(_, value) {
@@ -164,6 +173,8 @@ const AddUserForm = () => {
           <Option value="employee">Employee</Option>
         </Select>
       </Form.Item>
+
+      <UploadImage />
 
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">

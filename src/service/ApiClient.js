@@ -1,9 +1,16 @@
 import axios from "axios";
-
-const BASE_URL = "https://api.escuelajs.co/api/v1";
+import { BASE_URL } from "../constants/Constants";
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
+});
+
+apiClient.interceptors.request.use((request) => {
+  request.headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  };
+  return request;
 });
 
 export default apiClient;

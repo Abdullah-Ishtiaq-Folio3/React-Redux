@@ -1,10 +1,10 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Form, Upload } from "antd";
-import { BASE_URL } from "../../constants/Constants";
+import { BASE_URL, END_POINTS } from "../../constants/Constants";
 
 const props = {
   name: "file",
-  action: BASE_URL + "/files/upload",
+  action: BASE_URL + END_POINTS.FILE_UPLOAD,
   "Content-Type": "multipart/form-data",
   maxCount: 1,
   listType: "picture-card",

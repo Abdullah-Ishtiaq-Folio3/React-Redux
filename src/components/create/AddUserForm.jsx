@@ -1,5 +1,6 @@
 import { Button, Form, Input, Select } from "antd";
-import AntPhone from "./InputPhone";
+import { PhoneNumberUtil } from "google-libphonenumber";
+import InputPhone from "./InputPhone";
 import UploadImage from "./UploadImage";
 import { addUser } from "../../service/ApiCalls";
 
@@ -43,8 +44,16 @@ const onFinish = (values) => {
     password: values.password,
     avatar: values.upload[0].response.location,
   };
-  console.log(user.avatar);
   addUser(user);
+};
+
+const phoneUtil = PhoneNumberUtil.getInstance();
+const isPhoneValid = (phone) => {
+  try {
+    return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
+  } catch (error) {
+    return false;
+  }
 };
 
 const AddUserForm = () => {
@@ -150,11 +159,19 @@ const AddUserForm = () => {
         rules={[
           {
             required: true,
-            message: "Please select role!",
+            message: "Please enter phone number!",
           },
+          () => ({
+            validator(_, value) {
+              if (!value || isPhoneValid(value)) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error("Phone Number is not valid!"));
+            },
+          }),
         ]}
       >
-        <AntPhone />
+        <InputPhone />
       </Form.Item>
 
       <Form.Item

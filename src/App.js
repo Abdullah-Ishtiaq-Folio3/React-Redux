@@ -1,25 +1,29 @@
-import logo from "./logo.svg";
-import "./App.css";
+import { Button, Layout } from "antd";
+import AllUsers from "./components/retrieve/AllUsers";
 
-function Abc() {
+const { Header, Content, Footer } = Layout;
+const HomePage = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout className="layout">
+      <Header
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Button type="default">Add User</Button>
+      </Header>
+      <Content>
+        <AllUsers />
+      </Content>
+      <Footer
+        style={{
+          textAlign: "center",
+        }}
+      >
+        © Abdullah Ishtiaq @ Folio3
+      </Footer>
+    </Layout>
   );
-}
-
-export default App;
+};
+export default HomePage;

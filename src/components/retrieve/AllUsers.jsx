@@ -12,14 +12,17 @@ const AllUsers = () => {
     store.dispatch(fetchUsers());
   }, []);
 
-  const { users, isLoading, error } = useSelector((state) => state.users);
+  const { usersToDisplay, fetchLoading, fetchError } = useSelector(
+    (state) => state.users
+  );
 
-  if (isLoading) return <Loader />;
-  if (error) return <Error code={error.code} message={error.message} />;
+  if (fetchLoading) return <Loader text="Loading" />;
+  if (fetchError)
+    return <Error code={fetchError.code} message={fetchError.message} />;
 
   const rows = [];
-  for (let i = 0; i < users.length; i += 4) {
-    const rowUsers = users.slice(i, i + 4);
+  for (let i = 0; i < usersToDisplay.length; i += 4) {
+    const rowUsers = usersToDisplay.slice(i, i + 4);
     rows.push(
       <Row key={i} style={{ margin: 10 }}>
         {rowUsers.map((user) => (

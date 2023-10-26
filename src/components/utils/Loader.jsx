@@ -1,13 +1,13 @@
 import { Spin } from "antd";
 
-const Loader = () => (
-  <Spin tip="Loading" size="large">
+const Loader = ({ text, height }) => (
+  <Spin tip={text} size="large">
     <div
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        height: "100vh",
+        height: height ? height : "100vh",
       }}
     />
   </Spin>

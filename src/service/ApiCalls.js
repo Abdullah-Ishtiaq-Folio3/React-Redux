@@ -19,24 +19,16 @@ async function getUsers() {
   }
 }
 
-async function updateUser(id) {
+async function updateUser({ newUser, id }) {
   try {
-    const response = await apiClient.put(END_POINTS.ADD_UPDATE_USER + id);
+    const response = await apiClient.put(
+      END_POINTS.ADD_UPDATE_USER + id,
+      newUser
+    );
     return response?.data;
   } catch (error) {
     throw error;
   }
 }
 
-async function checkEmailAvailability(email) {
-  try {
-    const response = await apiClient.post(END_POINTS.IS_EMAIL_AVAILABLE, {
-      email: email,
-    });
-    return response?.data;
-  } catch (error) {
-    throw error;
-  }
-}
-
-export { addUser, getUsers, updateUser, checkEmailAvailability };
+export { addUser, getUsers, updateUser };

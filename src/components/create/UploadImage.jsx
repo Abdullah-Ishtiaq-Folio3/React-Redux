@@ -17,12 +17,24 @@ const getFile = (e) => {
   return e && e.fileList;
 };
 
-const UploadImage = () => {
+const UploadImage = ({ toAdd, initialValue }) => {
   return (
     <Form.Item
       name="upload"
       label="Avatar"
       valuePropName="fileList"
+      initialValue={
+        initialValue
+          ? [
+              {
+                uid: "-1",
+                name: "image.png",
+                status: "done",
+                response: { location: initialValue },
+              },
+            ]
+          : null
+      }
       getValueFromEvent={getFile}
       rules={[
         {
@@ -39,7 +51,7 @@ const UploadImage = () => {
               marginTop: 8,
             }}
           >
-            Upload
+            {toAdd ? <>Upload</> : <>Change</>}
           </div>
         </div>
       </Upload>

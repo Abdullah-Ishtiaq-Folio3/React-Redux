@@ -2,7 +2,14 @@ import { Button, Form, Input, Select } from "antd";
 import { PhoneNumberUtil } from "google-libphonenumber";
 import InputPhone from "./InputPhone";
 import UploadImage from "./UploadImage";
-import { addUser } from "../../service/ApiCalls";
+import {
+  createUser,
+  editUser,
+  filterUsers,
+  changePage,
+} from "../../redux/actions/UserAction";
+import { store } from "../../redux/Store";
+import { useSelector } from "react-redux";
 
 const { Option } = Select;
 const formItemLayout = {
@@ -36,17 +43,6 @@ const tailFormItemLayout = {
   },
 };
 
-const onFinish = (values) => {
-  console.log(values);
-  const user = {
-    name: values.name,
-    email: values.email,
-    password: values.password,
-    avatar: values.upload[0].response.location,
-  };
-  addUser(user);
-};
-
 const phoneUtil = PhoneNumberUtil.getInstance();
 const isPhoneValid = (phone) => {
   try {
@@ -56,8 +52,25 @@ const isPhoneValid = (phone) => {
   }
 };
 
-const AddUserForm = () => {
+const AddUserForm = ({ toAdd, user }) => {
+  const { currentPage, currentPageSize, currentFilter } = useSelector(
+    (state) => state.users
+  );
   const [form] = Form.useForm();
+
+  const onFinish = async (values) => {
+    const newUser = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      avatar: values.upload[0].response.location,
+    };
+
+    if (toAdd) await store.dispatch(createUser(newUser));
+    else await store.dispatch(editUser({ newUser, id: user.id }));
+    store.dispatch(filterUsers(currentFilter));
+    store.dispatch(changePage({ page: currentPage, size: currentPageSize }));
+  };
 
   return (
     <Form
@@ -73,6 +86,7 @@ const AddUserForm = () => {
       <Form.Item
         name="name"
         label="Name"
+        initialValue={user?.name}
         rules={[
           {
             required: true,
@@ -87,14 +101,15 @@ const AddUserForm = () => {
       <Form.Item
         name="email"
         label="E-mail"
+        initialValue={user?.email}
         rules={[
-          {
-            type: "email",
-            message: "The input is not valid E-mail!",
-          },
           {
             required: true,
             message: "Please input user's E-mail!",
+          },
+          {
+            type: "email",
+            message: "The input is not valid E-mail!",
           },
         ]}
       >
@@ -104,6 +119,7 @@ const AddUserForm = () => {
       <Form.Item
         name="password"
         label="Password"
+        initialValue={user?.password}
         hasFeedback
         rules={[
           {
@@ -118,7 +134,7 @@ const AddUserForm = () => {
               }
               return Promise.reject(
                 new Error(
-                  "The password must be at least 8 characters long and contain at least letter and one number."
+                  "The password must be at least 8 characters long and contain at least letter and one number and no special character."
                 )
               );
             },
@@ -131,6 +147,7 @@ const AddUserForm = () => {
       <Form.Item
         name="confirm"
         label="Confirm Password"
+        initialValue={user?.password}
         dependencies={["password"]}
         hasFeedback
         rules={[
@@ -156,6 +173,7 @@ const AddUserForm = () => {
       <Form.Item
         name="phone"
         label="Phone"
+        initialValue={user?.phone}
         rules={[
           {
             required: true,
@@ -177,6 +195,7 @@ const AddUserForm = () => {
       <Form.Item
         name="role"
         label="Role"
+        initialValue={user?.role}
         rules={[
           {
             required: true,
@@ -191,11 +210,11 @@ const AddUserForm = () => {
         </Select>
       </Form.Item>
 
-      <UploadImage />
+      <UploadImage initialValue={user?.avatar} toAdd={toAdd} />
 
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">
-          Add User
+          {toAdd ? <>Add User</> : <>Update User</>}
         </Button>
       </Form.Item>
     </Form>

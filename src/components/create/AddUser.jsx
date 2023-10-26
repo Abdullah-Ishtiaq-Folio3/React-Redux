@@ -1,14 +1,28 @@
 import { Button, Modal } from "antd";
 import AddUserForm from "./AddUserForm";
+import { useSelector } from "react-redux";
+import Loader from "../utils/Loader";
+import Error from "../utils/Error";
+import { store } from "../../redux/Store";
+import { setOpenModal } from "../../redux/actions/UserAction";
 
-const AddUser = ({ open, setOpen }) => {
+const AddUser = ({ toAdd, user }) => {
+  const { openModal, addLoading, addError, updateLoading, updateError } =
+    useSelector((state) => state.users);
   const handleCancel = () => {
-    setOpen(false);
+    store.dispatch(setOpenModal(false));
   };
+  let content = <AddUserForm toAdd={toAdd} user={user} />;
+  if (addLoading) content = <Loader text="Adding" height="50vh" />;
+  else if (updateLoading) content = <Loader text="Updating" height="50vh" />;
+  else if (addError)
+    content = <Error code={addError.code} message={addError.message} />;
+  else if (updateError)
+    content = <Error code={updateError.code} message={updateError.message} />;
   return (
     <Modal
-      open={open}
-      title="Add User"
+      open={openModal}
+      title={toAdd ? "Add User" : "Edit User"}
       onCancel={handleCancel}
       footer={[
         <Button key="back" onClick={handleCancel}>
@@ -16,7 +30,7 @@ const AddUser = ({ open, setOpen }) => {
         </Button>,
       ]}
     >
-      <AddUserForm />
+      {content}
     </Modal>
   );
 };

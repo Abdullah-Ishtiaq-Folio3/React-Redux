@@ -1,15 +1,24 @@
-import React, { useState, useEffect } from "react";
-import { Col, Row, Pagination } from "antd";
-import User from "./User";
+import { useEffect } from "react";
+import { Col, Row } from "antd";
 import { useSelector } from "react-redux";
-import { fetchUsers } from "../../redux/actions/UserAction";
+import {
+  changePage,
+  fetchUsers,
+  filterUsers,
+} from "../../redux/actions/UserAction";
 import { store } from "../../redux/Store";
 import Loader from "../utils/Loader";
 import Error from "../utils/Error";
+import User from "./User";
 
 const AllUsers = () => {
   useEffect(() => {
-    store.dispatch(fetchUsers());
+    async function fetchData() {
+      await store.dispatch(fetchUsers());
+      store.dispatch(filterUsers(""));
+      store.dispatch(changePage({ page: 1, size: 12 }));
+    }
+    fetchData();
   }, []);
 
   const { usersToDisplay, fetchLoading, fetchError } = useSelector(

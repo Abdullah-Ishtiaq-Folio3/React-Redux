@@ -1,20 +1,24 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { getUsers, addUser, updateUser } from "../../service/ApiCalls";
+import { USER_ACTIONS } from "../../constants/Constants";
 
-const fetchUsers = createAsyncThunk("users/getUsers", getUsers);
-const editUser = createAsyncThunk("users/updateUser", async (user) =>
+// Async Thunk calls
+const fetchUsers = createAsyncThunk(USER_ACTIONS.FETCH_USERS, getUsers);
+const editUser = createAsyncThunk(USER_ACTIONS.EDIT_USER, async (user) =>
   updateUser(user)
 );
-const createUser = createAsyncThunk("users/addUser", async (user) => {
-  console.log("thunk");
+const createUser = createAsyncThunk(USER_ACTIONS.CREATE_USER, async (user) => {
   return await addUser(user);
 });
 
-const setOpenModal = createAction("users/openModal");
-const setCurrentUser = createAction("users/setCurrentUser");
-const deleteUser = createAction("users/deleteUser");
-const changePage = createAction("users/changePage");
-const filterUsers = createAction("users/filterUsers");
+// Actions
+const setOpenModal = createAction(USER_ACTIONS.SET_OPEN_MODAL);
+const setCurrentUser = createAction(USER_ACTIONS.SET_CURRENT_USER);
+const deleteUser = createAction(USER_ACTIONS.DELETE_USER);
+const changePage = createAction(USER_ACTIONS.CHANGE_PAGE);
+const filterUsers = createAction(USER_ACTIONS.FILTER_USERS);
+const addPhoneNumber = createAction(USER_ACTIONS.ADD_PHONE_NUMBER);
+
 export {
   fetchUsers,
   editUser,
@@ -24,4 +28,5 @@ export {
   deleteUser,
   changePage,
   filterUsers,
+  addPhoneNumber,
 };

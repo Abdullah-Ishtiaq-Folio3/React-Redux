@@ -1,4 +1,5 @@
 import { Button, Layout, Pagination, Dropdown } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 import AllUsers from "./components/retrieve/AllUsers";
 import AddUser from "./components/create/AddUser";
 import { useSelector } from "react-redux";
@@ -8,15 +9,15 @@ import {
   changePage,
   filterUsers,
 } from "./redux/actions/UserAction";
-import { FilterOutlined } from "@ant-design/icons";
+import { ROLES } from "./constants/Constants";
 
 const { Header, Content, Footer } = Layout;
 
 const handleFilterClick = (e) => {
   let role = "";
-  if (e.key == 2) role = "customer";
-  else if (e.key == 3) role = "employee";
-  else if (e.key == 4) role = "admin";
+  if (e.key == 2) role = ROLES.CUSTOMER;
+  else if (e.key == 3) role = ROLES.EMPLOYEE;
+  else if (e.key == 4) role = ROLES.ADMIN;
   store.dispatch(filterUsers(role));
   store.dispatch(changePage({ page: 1, size: 12 }));
 };
@@ -44,9 +45,7 @@ const menuProps = {
 };
 
 const HomePage = () => {
-  const { openModal, currentUser, filteredUsers } = useSelector(
-    (state) => state.users
-  );
+  const { openModal, filteredUsers } = useSelector((state) => state.users);
   return (
     <Layout className="layout">
       <Header
@@ -54,7 +53,7 @@ const HomePage = () => {
           display: "flex",
           backgroundColor: "seagreen",
           justifyContent: "space-between",
-          alignItems: "center", // add this line
+          alignItems: "center",
         }}
       >
         <div>
@@ -85,9 +84,7 @@ const HomePage = () => {
         </div>
       </Header>
       <Content>
-        {openModal && (
-          <AddUser toAdd={currentUser == null} user={currentUser} />
-        )}
+        {openModal && <AddUser />}
 
         <AllUsers />
       </Content>

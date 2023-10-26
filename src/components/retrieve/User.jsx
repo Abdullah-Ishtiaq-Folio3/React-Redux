@@ -1,6 +1,5 @@
-import React from "react";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Card, Popconfirm } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { store } from "../../redux/Store";
 import {
   changePage,
@@ -17,15 +16,18 @@ const User = ({ user }) => {
   const { currentPage, currentPageSize, currentFilter } = useSelector(
     (state) => state.users
   );
+
   const handleEdit = () => {
     store.dispatch(setCurrentUser(user));
     store.dispatch(setOpenModal(true));
   };
+
   const handleDelete = () => {
     store.dispatch(deleteUser(user.id));
     store.dispatch(filterUsers(currentFilter));
     store.dispatch(changePage({ page: currentPage, size: currentPageSize }));
   };
+
   return (
     <Card
       style={{

@@ -7,9 +7,11 @@ import {
   editUser,
   filterUsers,
   changePage,
+  addPhoneNumber,
 } from "../../redux/actions/UserAction";
 import { store } from "../../redux/Store";
 import { useSelector } from "react-redux";
+import { ROLES } from "../../constants/Constants";
 
 const { Option } = Select;
 const formItemLayout = {
@@ -52,10 +54,9 @@ const isPhoneValid = (phone) => {
   }
 };
 
-const AddUserForm = ({ toAdd, user }) => {
-  const { currentPage, currentPageSize, currentFilter } = useSelector(
-    (state) => state.users
-  );
+const AddUserForm = () => {
+  const { currentPage, currentPageSize, currentFilter, currentUser } =
+    useSelector((state) => state.users);
   const [form] = Form.useForm();
 
   const onFinish = async (values) => {
@@ -66,8 +67,14 @@ const AddUserForm = ({ toAdd, user }) => {
       avatar: values.upload[0].response.location,
     };
 
-    if (toAdd) await store.dispatch(createUser(newUser));
-    else await store.dispatch(editUser({ newUser, id: user.id }));
+    if (currentUser == null) await store.dispatch(createUser(newUser));
+    else {
+      await store.dispatch(editUser({ newUser, id: currentUser.id }));
+      store.dispatch(
+        addPhoneNumber({ phone: values.phone, id: currentUser.id })
+      );
+    }
+
     store.dispatch(filterUsers(currentFilter));
     store.dispatch(changePage({ page: currentPage, size: currentPageSize }));
   };
@@ -86,7 +93,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="name"
         label="Name"
-        initialValue={user?.name}
+        initialValue={currentUser?.name}
         rules={[
           {
             required: true,
@@ -101,7 +108,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="email"
         label="E-mail"
-        initialValue={user?.email}
+        initialValue={currentUser?.email}
         rules={[
           {
             required: true,
@@ -119,7 +126,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="password"
         label="Password"
-        initialValue={user?.password}
+        initialValue={currentUser?.password}
         hasFeedback
         rules={[
           {
@@ -147,7 +154,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="confirm"
         label="Confirm Password"
-        initialValue={user?.password}
+        initialValue={currentUser?.password}
         dependencies={["password"]}
         hasFeedback
         rules={[
@@ -173,7 +180,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="phone"
         label="Phone"
-        initialValue={user?.phone}
+        initialValue={currentUser?.phone}
         rules={[
           {
             required: true,
@@ -195,7 +202,7 @@ const AddUserForm = ({ toAdd, user }) => {
       <Form.Item
         name="role"
         label="Role"
-        initialValue={user?.role}
+        initialValue={currentUser?.role}
         rules={[
           {
             required: true,
@@ -204,17 +211,20 @@ const AddUserForm = ({ toAdd, user }) => {
         ]}
       >
         <Select placeholder="select your role">
-          <Option value="customer">Customer</Option>
-          <Option value="admin">Admin</Option>
-          <Option value="employee">Employee</Option>
+          <Option value={ROLES.CUSTOMER}>Customer</Option>
+          <Option value={ROLES.ADMIN}>Admin</Option>
+          <Option value={ROLES.EMPLOYEE}>Employee</Option>
         </Select>
       </Form.Item>
 
-      <UploadImage initialValue={user?.avatar} toAdd={toAdd} />
+      <UploadImage
+        initialValue={currentUser?.avatar}
+        toAdd={currentUser == null}
+      />
 
       <Form.Item {...tailFormItemLayout}>
         <Button type="primary" htmlType="submit">
-          {toAdd ? <>Add User</> : <>Update User</>}
+          {currentUser == null ? <>Add User</> : <>Update User</>}
         </Button>
       </Form.Item>
     </Form>

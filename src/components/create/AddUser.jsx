@@ -6,13 +6,22 @@ import Error from "../utils/Error";
 import { store } from "../../redux/Store";
 import { setOpenModal } from "../../redux/actions/UserAction";
 
-const AddUser = ({ toAdd, user }) => {
-  const { openModal, addLoading, addError, updateLoading, updateError } =
-    useSelector((state) => state.users);
+const AddUser = () => {
+  const {
+    openModal,
+    addLoading,
+    addError,
+    updateLoading,
+    updateError,
+    currentUser,
+  } = useSelector((state) => state.users);
+
   const handleCancel = () => {
     store.dispatch(setOpenModal(false));
   };
-  let content = <AddUserForm toAdd={toAdd} user={user} />;
+
+  let content = <AddUserForm />;
+
   if (addLoading) content = <Loader text="Adding" height="50vh" />;
   else if (updateLoading) content = <Loader text="Updating" height="50vh" />;
   else if (addError)
@@ -22,7 +31,7 @@ const AddUser = ({ toAdd, user }) => {
   return (
     <Modal
       open={openModal}
-      title={toAdd ? "Add User" : "Edit User"}
+      title={currentUser == null ? "Add User" : "Edit User"}
       onCancel={handleCancel}
       footer={[
         <Button key="back" onClick={handleCancel}>

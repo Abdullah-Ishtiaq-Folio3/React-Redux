@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { fetchUsers, editUser, createUser } from "../actions/UserAction";
-import { current } from "@reduxjs/toolkit";
 
 const initialState = {
   users: [],
@@ -8,8 +7,8 @@ const initialState = {
   usersToDisplay: [],
 
   currentFilter: "",
-  currentPage: 1,
-  currentPageSize: 12,
+  currentPage: 0,
+  currentPageSize: 0,
   currentUser: null,
 
   fetchLoading: false,
@@ -30,6 +29,10 @@ export const userSlice = createSlice({
   reducers: {
     openModal: (state, action) => {
       state.openModal = action.payload;
+      if (!action.payload) {
+        state.addError = null;
+        state.updateError = null;
+      }
     },
     setCurrentUser: (state, action) => {
       state.currentUser = action.payload;
@@ -55,7 +58,13 @@ export const userSlice = createSlice({
           (user) => user.role === action.payload
         );
       }
-      console.log(current(state));
+    },
+    addPhoneNumber: (state, action) => {
+      state.users = state.users.map((user) =>
+        user.id === action.payload.id
+          ? { ...user, phone: action.payload.phone }
+          : user
+      );
     },
   },
   extraReducers(builder) {
@@ -66,8 +75,6 @@ export const userSlice = createSlice({
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.fetchLoading = false;
         state.users = action.payload;
-        state.filteredUsers = action.payload;
-        state.usersToDisplay = action.payload.slice(0, 12);
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.fetchLoading = false;
@@ -78,18 +85,16 @@ export const userSlice = createSlice({
         state.updateLoading = true;
       })
       .addCase(editUser.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.updateLoading = false;
-        if (action.payload.id == 4) console.log("user", action.payload);
         state.users = state.users.map((user) =>
-          user.id == action.payload.id ? action.payload : user
+          user.id === action.payload.id ? action.payload : user
         );
         state.currentUser = null;
         state.openModal = false;
-        console.log(current(state));
       })
       .addCase(editUser.rejected, (state, action) => {
         state.updateLoading = false;
+        state.currentUser = null;
         state.updateError = action.error;
       })
 
@@ -100,10 +105,6 @@ export const userSlice = createSlice({
         state.addLoading = false;
         state.users.push(action.payload);
         state.openModal = false;
-        if (state.currentFilter === action.payload.role) {
-          state.filteredUsers.push(action.payload);
-          state.usersToDisplay.push(action.payload);
-        }
       })
       .addCase(createUser.rejected, (state, action) => {
         state.addLoading = false;
